@@ -1,0 +1,3 @@
+﻿<Properties>
+  <WatchEntry0 value="Browser(&quot;Browser&quot;).Page(&quot;Page&quot;).WebElement(&quot;innertext:=Order complete&quot;).Highlight" />
+</Properties>
