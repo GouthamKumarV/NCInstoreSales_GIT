@@ -1,0 +1,3 @@
+﻿<Properties>
+  <WatchEntry0 value="Split(Browser(&quot;Browser&quot;).Page(&quot;Page&quot;).Frame(&quot;eposTab&amp;&amp;0Frame&quot;).WebElement(&quot;MobileNumber&quot;).GetROProperty(&quot;innertext&quot;),&quot;:&quot;)(1)" />
+</Properties>

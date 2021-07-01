@@ -1,0 +1,6 @@
+﻿<Properties>
+  <WatchEntry0 value="instr(13,&quot;HCLTEtSTINGtESTt&quot;,&quot;t&quot;)" />
+  <WatchEntry1 value="lbound(split(&quot;HCLHCLHCL&quot;,&quot;L&quot;))" />
+  <WatchEntry2 value="Filter(array1,array1(0))" />
+  <WatchEntry3 value="Browser(&quot;Browser&quot;).Page(&quot;Page&quot;).Frame(&quot;ePOSTab&amp;&amp;0Frame_7&quot;).WebElement(&quot;innertext:=Amazon Prime.*&quot;,&quot;index:=1&quot;).Click" />
+</Properties>

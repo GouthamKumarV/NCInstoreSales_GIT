@@ -1,0 +1,824 @@
+﻿
+Function CommonStockAdjustmentSellableForAccesseriory(strPLU,strIMEI,LoginType,strXstoreUsername,strXstorePassword)
+	Set WshellOBJ = CreateObject("WScript.Shell")
+'	Call LoginXstore(LoginType,strXstoreUsername,strXstorePassword)
+	Wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaList("DtvList").Select "#2"
+	Wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaList("DtvList").Select "#6"
+	Wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaList("Adjustment Type").Select "Sellable"
+	Wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaList("Reason").Select "ASSUMED THEFT"
+	Wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaEdit("Justification").Set "test"
+	Wait 2
+ 	WshellOBJ.SendKeys"{F2}"
+ 	Wait 2
+JavaWindow("Oracle Retail Xstore Point").JavaEdit("Enter PLU").Set strPLU
+JavaWindow("Oracle Retail Xstore Point").JavaEdit("Enter PLU").Activate
+
+Wait 2
+JavaWindow("Oracle Retail Xstore Point").JavaEdit("Enter Quantity").Set "1"
+JavaWindow("Oracle Retail Xstore Point").JavaEdit("Enter Quantity").Activate
+
+'Wait 2
+'JavaWindow("Oracle Retail Xstore Point").JavaEdit("IMEI/Serial Number").Set strIMEI
+'
+'Wait 2
+'JavaWindow("Oracle Retail Xstore Point").JavaButton("Add").Click
+'Wait 2
+'
+'Set WshellOBJ = CreateObject("WScript.Shell")
+'WshellOBJ.SendKeys"{F2}"
+'
+Wait(3)
+
+If JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Exist(3) Then
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+End If
+
+Set WshellOBJ = CreateObject("WScript.Shell")
+WshellOBJ.SendKeys"{F2}"
+Wait(3)
+
+If JavaWindow("Oracle Retail Xstore Point").JavaButton("Back").Exist(3) Then
+
+Reporter.ReportEvent micPass,"Stock adjustment added for  PLU", "Stock adjustment added for  PLU successfully."
+Else
+
+Reporter.ReportEvent micPass,"Stock adjustment unsuccessful", "Stock adjustment  for  PLU Unsuccessfully."
+
+End If
+
+Call Logout(LoginType)
+	
+End Function
+
+Function ProductNavtoGoToBasketForAccessory()
+Wait 1
+Set objShell=CreateObject("WScript.Shell")
+wait 1
+For i = 0 To 8
+	
+	if Browser("Browser").Page("Page").Frame("Frame_2").WebButton("Add to basket").Exist(3) Then
+		Browser("Browser").Page("Page").Frame("Frame_2").WebButton("Add to basket").Click
+		Exit for
+		
+	Elseif Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame_4").WebButton("Add to basket").Exist(3) Then
+		Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame_4").WebButton("Add to basket").Click
+		Exit For
+	End If
+	Wait 1
+	
+	objShell.SendKeys "{PGDN}"
+Next
+
+	strVal = Browser("Browser").Page("Page").Frame("eposTab&&0Frame_5").WebElement("The basket has 1 item").GetROProperty("innertext")
+	If instr(strVal,"basket")=0 Then
+		Reporter.ReportEvent micPass, "Basket Page is displayed", "Step Passed"	
+	End If
+
+End Function
+
+Function SkipForNowLink()
+	Wait 1
+	Set objShell=CreateObject("WScript.Shell")
+	wait 1
+	For i = 0 To 8
+		wait 3
+		If Browser("Browser").Page("Page").Frame("Frame").Link("Skip for now").Exist(5) Then
+			Browser("Browser").Page("Page").Frame("Frame").Link("Skip for now").Click
+			wait 7
+			Exit For
+		End If
+		objShell.SendKeys "{PGDN}"
+	
+	Next
+	
+End Function
+
+Function FinalorderStatusValidation()
+	
+'	wait 5
+'	If Browser("Evolution").exist(2) Then
+		wait 1
+		If 	Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebButton("Update transaction status").Exist(10) Then
+			Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebButton("Update transaction status").Click
+		End If
+		
+		wait 20
+		If Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("Order complete").Exist(10) Then
+			Validationtext =  Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("Order complete").GetROProperty("text")
+			'msgbox Validationtext
+			
+			'Browser("Browser").Page("Page").Frame("Frame").WebElement("Order complete").Click
+		End If
+	
+	'End If
+End Function
+
+Function FinalCheck()
+	
+	Set myobj = createobject("wscript.shell")
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Get Orders").Click   'Press F6
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Pending Orders").Click  'Press F2
+	wait 5
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Retrieve Order Details").Click 'Press F2
+	wait 3
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Total").Click  'Press F7
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaCheckBox("icon-checkbox").Set "ON"
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaCheckBox("icon-checkbox_2").Set "ON"
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm_2").Click
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("OK").Click
+	wait 5
+	CashAmount = JavaWindow("text:=Oracle Retail.*").JavaStaticText("text:=£.*").getRoproperty("text")
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaEdit("CASH amount").Set CashAmount
+	wait 2
+	myobj.SendKeys "{ENTER}"
+	wait 2
+	
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Email Only").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Email Only").Click
+	End If
+	wait 3
+	
+	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+	End If
+	wait 3
+'	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+'		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+'	End If
+'	wait 3
+'	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+'		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+'	End If
+'	wait 3
+'	If Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Exist(2) Then
+'		Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Click
+'	End If
+	wait 3
+	If Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Exist(2) Then
+		Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Click
+	End If
+	wait 3
+	If Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Exist(2) Then
+		Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Click
+	End If
+	wait 3
+	'END OF SALE JOURNEY	
+	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+	End If
+
+End Function
+
+'###################################################################################################################
+'Function Name: Login
+'Function Description: Login into Xstore Application
+'Designed By Date: STEFFY
+'Designed Date(MM/DD/YY): 11/11/2020
+'###################################################################################################################
+
+
+Function LoginXstore(LoginType,strXstoreUsername,strXstorePassword)
+	If (LoginType="Backoffice") Then
+		If (JavaWindow("Oracle Retail Xstore Point").JavaButton("Back Office").Exist(2)) Then
+			JavaWindow("Oracle Retail Xstore Point").JavaButton("Back Office").Click
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Set strXstoreUsername
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Activate
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Set strXstorePassword
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Activate
+
+			If (JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Exist(2)) Then
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Click
+				Wait 2
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+				Wait 2
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+				Else 
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+				Wait 2
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+			End If
+
+			Else
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Set strXstoreUsername
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Activate
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Set strXstorePassword
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Back Office Login").Activate
+			If (JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Exist(2)) Then
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Click
+				Wait 2
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+				Wait 2
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+				Else
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+				Wait 2
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+			End If
+			
+		End If
+	ElseIf (LoginType="Till") Then
+		If (JavaWindow("Oracle Retail Xstore Point").JavaButton("Till").Exist(2)) Then
+			JavaWindow("Oracle Retail Xstore Point").JavaButton("Till").Click
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Set strXstoreUsername
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Activate
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Set strXstorePassword
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Activate
+			wait 4
+			If (JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Exist(2)) Then
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Click
+				Wait 2
+				
+				If JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Exist(3) Then
+					JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+					Wait 2
+					JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+'					Else 
+'					JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+'					Wait 2
+'					JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+					End If
+			End If
+			Else
+			wait 2
+			If JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Exist(3) Then
+				JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Set strXstoreUsername
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Activate
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Set strXstorePassword
+			JavaWindow("Oracle Retail Xstore Point").JavaEdit("Login").Activate
+			End If
+			
+			If (JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Exist(2)) Then
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Override").Click
+				Wait 2
+'				JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+'				ssWait 2
+'				JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+		   ElseIf (JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Exist(2)) Then
+		   		JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+				Wait 2
+				JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+			Else
+				Reporter.ReportEvent micPass, "Unable to login","Step failed"
+			End If
+		End If	
+	Else
+		Reporter.ReportEvent micFail, "Unable to login", "Test step Failed"
+	
+	
+	End If
+	
+End Function
+
+Function ItemsLockCheck()
+	
+	wait 2
+	Set WshellOBJ = CreateObject("WScript.Shell")
+	Wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaList("DtvList").Select "#18"
+	Wait 5
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Include").Exist(3) Then
+		'JavaWindow("Oracle Retail Xstore Point").JavaButton("Include").Click
+		Reporter.ReportEvent micPass, "Include Button", "Validation of Include Button is Done"
+	Else
+		Reporter.ReportEvent micFail, "Include Button", "Failed to Validate the Include Button"
+	End If
+	wait 2
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Exclude").Exist(3) Then
+		'JavaWindow("Oracle Retail Xstore Point").JavaButton("Include").Click
+		Reporter.ReportEvent micPass, "Exclude Button", "Validation of Exclude Button is Done"
+	Else
+		Reporter.ReportEvent micFail, "Exclude Button", "Failed to Validate the Exclude Button"
+	End If
+	
+	wait 2
+	If 	JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+	End If
+	
+	wait 2
+	If 	JavaWindow("Oracle Retail Xstore Point").JavaButton("Back_2").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Back_2").Click
+	End If
+	
+End Function
+
+Function ItemsLockIncludeExcludeCheck()
+	
+	wait 2
+	Set WshellOBJ = CreateObject("WScript.Shell")
+	Wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaList("DtvList").Select "#18"
+	Wait 5
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Include").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Include").Click
+		Reporter.ReportEvent micPass, "Include Button", "Validation of Include Button is Done"
+	Else
+		Reporter.ReportEvent micFail, "Include Button", "Failed to Validate the Include Button"
+	End If
+	wait 2
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Exclude").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Exclude").Click
+		Reporter.ReportEvent micPass, "Exclude Button", "Validation of Exclude Button is Done"
+	Else
+		Reporter.ReportEvent micFail, "Exclude Button", "Failed to Validate the Exclude Button"
+	End If
+	
+	wait 2
+	If 	JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm").Click
+	End If
+	
+	wait 2
+	If 	JavaWindow("Oracle Retail Xstore Point").JavaButton("Back_2").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Back_2").Click
+	End If
+	
+End Function
+
+Function ReserveOrderFinalContinueAccessory()
+
+	Wait 1
+	Set objShell=CreateObject("WScript.Shell")
+	wait 1
+	For i = 0 To 8 
+		
+	If Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue").Exist(60) Then
+		'Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue").HoverTap
+		Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue").Click
+		Exit For
+	End If
+'	If Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue_2").Exist(10) Then
+'		Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue_2").HoverTap
+'		Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue_2").Click
+'		Exit For
+'	End If
+'	If Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue_2").Exist(5) Then
+'		Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue_2").HoverTap
+'		Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Continue_2").Click
+'		Exit For
+'	End If
+'	If Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebList("TimeAtAddress").Exist(50) Then
+'		Reporter.ReportEvent micPass,"Navigate to Eligibility Check page","Navigated to Eligibility Check page successfully"
+'	Else	
+'		Reporter.ReportEvent micFail,"Navigate to Eligibility Check page","Not naviagted to Eligibility Check page, cross verify the page"
+'	End If	
+objShell.SendKeys "{PGDN}"
+Next
+End Function
+
+Function SVOSValidate(strUsername,strPassword,stremailID)
+
+Set objShell=CreateObject("WScript.Shell")
+
+SystemUtil.Run "C:\Program Files\Google\Chrome\Application\chrome.exe","https://toms-e2e3.vip.a.itdev.uk.pri.o2.com/"
+'Browser("Browser").Navigate "https://toms-e2e3.vip.a.itdev.uk.pri.o2.com/"
+wait 2
+
+If Browser("Browser").Exist(3) Then
+	Browser("Browser").Maximize
+End If
+wait 2
+
+If Browser("Browser").Page("Netcracker BSS R3").WebButton("Log on as NT user").Exist(3) Then
+	Browser("Browser").Page("Netcracker BSS R3").WebButton("Log on as NT user").Click
+End If
+wait 3
+If Browser("Browser").Page("Webtop").WebEdit("username").Exist(5) Then
+	Browser("Browser").Page("Webtop").WebEdit("username").Set strUsername
+		wait 3
+	Browser("Browser").Page("Webtop").WebButton("loginSearchUserBtn").Click
+		wait 4
+	Browser("Browser").Page("Webtop").WebEdit("password").SetSecure strPassword
+		wait 4
+	Browser("Browser").Page("Webtop").WebButton("LOGIN").Click
+	wait 10
+End If
+If Browser("Browser").Page("CSR Desktop").WebEdit("Email").Exist(3) Then
+	Browser("Browser").Page("CSR Desktop").WebEdit("Email").Set stremailID
+	wait 3
+End If
+wait 2
+If Browser("Browser").Page("CSR Desktop").WebButton("Search").Exist(3) Then
+	wait 1
+	Browser("Browser").Page("CSR Desktop").WebButton("Search").Click
+End If
+wait 4
+If Browser("Browser").Page("Agent Authentication Options").Exist(3) Then
+	Browser("Browser").Page("Agent Authentication Options").WebRadioGroup("agent_selected_val").Select "limited_view"
+	wait 2
+	Browser("Browser").Page("Agent Authentication Options").WebButton("Continue").Click
+	wait 2
+	'Browser("Browser").Page("Agent Authentication Options").Link("Override").Click
+	
+End If
+wait 7
+
+'If Browser("Browser").Page("CSR Desktop").WebButton("Left panel collapse button").Exist(3) Then
+'	Browser("Browser").Page("CSR Desktop").WebButton("Left panel collapse button").Click
+'	wait 3
+'	Browser("Browser").Page("CSR Desktop").WebElement("id_tab_10").Click
+'	wait 3
+'	
+'End If
+'wait 5
+
+If Browser("Browser").Page("CSR Desktop").WebCheckBox("WebCheckBox").Exist(5) Then
+		Reporter.ReportEvent micPass,"WebCheckBox","Clicked on WebCheckBox"
+		Browser("Browser").Page("CSR Desktop").WebCheckBox("WebCheckBox").Set "ON"
+			wait 4
+		Browser("Browser").Page("CSR Desktop").WebCheckBox("WebCheckBox").Set "OFF"
+			wait 4
+	Else
+		Reporter.ReportEvent micFail,"WebCheckBox","Failed to Click on WebCheckBox"
+End If
+wait 3
+'If Browser("Browser").Page("CSR Desktop").WebElement("Processed").Exist(3) Then
+'	Reporter.ReportEvent micPass,"Order Processed","Processed the order completed"
+'Else
+'	Reporter.ReportEvent micFail,"Order Processed","Processed the order is failed to complete"
+'
+'End If
+Browser("Browser").Page("CSR Desktop").Link("text:=Ev").HoverTap
+wait 2
+Browser("Browser").Page("CSR Desktop").Link("name:=Log Off").Click
+'Browser("Browser").Page("CSR Desktop").WebMenu("Evoloadtest012 Log Off").Select "Log Off"
+wait 4
+objShell.SendKeys "%{F4}"
+'Browser("Browser").Close
+
+'Browser("Browser").Page("tef-uat.uk.onpirean.com").
+	
+End Function
+
+Function FinalCheckXstoreValueValidation()
+	
+	Set myobj = createobject("wscript.shell")
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Get Orders").Click   'Press F6
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Pending Orders").Click  'Press F2
+	wait 5
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Retrieve Order Details").Click 'Press F2
+	wait 3
+	
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Help").Exist(2) Then
+		Reporter.ReportEvent micPass, "Help button","Help Buton is verified in Xstore Application "
+	Else
+		Reporter.ReportEvent micFail, "Help button","Help Buton is failed to verify in Xstore Application "
+	End If
+	
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Log Off").Exist(2) Then
+		Reporter.ReportEvent micPass, "Log Off button","Log Off Buton is verified in Xstore Application "
+	Else
+		Reporter.ReportEvent micFail, "Log Off button","Log Off Buton is Failed to verify in Xstore Application "
+	End If
+
+	wait 3
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Total").Exist(3)   Then 'Press F7
+		Wait 2
+			myobj.SendKeys "{F7}"
+		Reporter.ReportEvent micPass, "F7 button","F7 Buton is verified in Xstore Application "
+	'Else
+		'Reporter.ReportEvent micFail, "F7 button","F7 Buton is Failed to verify in Xstore Application "
+	End If
+	
+'	wait 3
+'	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Total").Exist(5) Then
+'		JavaWindow("Oracle Retail Xstore Point").JavaButton("Total").Click
+'	End If
+	
+	wait 2
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Complete Transaction").Exist(5) Then
+		Wait 2
+		myobj.SendKeys "{F7}"
+		Reporter.ReportEvent micPass, "F7 button","F7 Buton is verified in Xstore Application "
+		'JavaWindow("Oracle Retail Xstore Point").JavaButton("Complete Transaction").Click
+	
+	End  If
+	'JavaWindow("Oracle Retail Xstore Point").JavaButton("Total").Click  'Press F7
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaCheckBox("icon-checkbox").Set "ON"
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaCheckBox("icon-checkbox_2").Set "ON"
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm_2").Click
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("OK").Click
+	wait 5
+	CashAmount = JavaWindow("text:=Oracle Retail.*").JavaStaticText("text:=£.*").getRoproperty("text")
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaEdit("CASH amount").Set CashAmount
+	wait 2
+	myobj.SendKeys "{ENTER}"
+	wait 5
+	
+	'End If
+	
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Email Only").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Email Only").Click
+	End If
+	wait 3
+	
+	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+	End If
+	wait 3
+	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+	End If
+	wait 3
+	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+	End If
+	wait 3
+	If Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Exist(2) Then
+		Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Click
+	End If
+	wait 3
+	If Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Exist(2) Then
+		Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Click
+	End If
+	wait 3
+	If Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Exist(2) Then
+		Window("Oracle Retail Xstore Point").Dialog("Save Print Output As").WinButton("Cancel").Click
+	End If
+	wait 3
+	'END OF SALE JOURNEY	
+	If JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Exist(3) Then
+		JavaWindow("text:=Oracle Retail.*").JavaButton("text:=OK").Click
+	End If
+
+End Function
+
+Function ProductNavtoGoToBasket()
+	If Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Add to basket").Exist(60) Then
+		Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebButton("Add to basket").Click
+	End If
+	Wait 5
+	If Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebElement("The basket has 1 item").Exist(60) Then
+		strVal = Browser("Browser").Page("Page").Frame("eposTab&&0Frame").WebElement("The basket has 1 item").GetROProperty("innertext")
+		If instr(strVal,"basket")=0 Then
+			Reporter.ReportEvent micPass, "Basket Page is displayed", "Step Passed"
+		End If
+	End If
+End Function
+'###################################################################################################################
+'Function Name: ProductNavToCreateAccountPage
+'Function Description: ProductNavToCreateAccountPage
+'Designed By Date:RAMESH Thota
+'Designed Date(MM/DD/YY): 04/28/2021
+'Modified By&date: When do some change need to update here
+'###################################################################################################################
+Function ClickOnContinueShopping()
+
+Wait 1
+Set objShell=CreateObject("WScript.Shell")
+wait 1
+For i = 0 To 8 
+	objShell.SendKeys "{PGDN}"
+	
+	If Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebButton("Continue shopping").Exist(90) Then
+		wait 2
+		Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebButton("Continue shopping").Click
+		Exit For
+	End If
+
+Next
+	Wait 5
+'	If Browser("Browser").Page("Page").Frame("Email").WebEdit("login_hint").Exist(90) Then
+'		Reporter.ReportEvent micPass, "Navigate to email entry page","Email entry page is displayed"
+'	Else
+'		Reporter.ReportEvent micFail, "Navigate to email entry page","Email entry page is not displayed"
+'	End If
+
+End Function
+
+Function SVOSStatusCheck(strUsername,strPassword,stremailID)
+
+Set objShell=CreateObject("WScript.Shell")
+
+SystemUtil.Run "C:\Program Files\Google\Chrome\Application\chrome.exe","https://toms-e2e3.vip.a.itdev.uk.pri.o2.com/"
+'Browser("Browser").Navigate "https://toms-e2e3.vip.a.itdev.uk.pri.o2.com/"
+wait 2
+If Browser("Browser").Page("Netcracker BSS R3").WebButton("Log on as NT user").Exist(3) Then
+	Browser("Browser").Page("Netcracker BSS R3").WebButton("Log on as NT user").Click
+End If
+wait 3
+If Browser("Browser").Page("Webtop").WebEdit("username").Exist(5) Then
+	Browser("Browser").Page("Webtop").WebEdit("username").Set strUsername
+		wait 5
+	Browser("Browser").Page("Webtop").WebButton("loginSearchUserBtn").Click
+		wait 5
+	Browser("Browser").Page("Webtop").WebEdit("password").SetSecure strPassword
+		wait 5
+	Browser("Browser").Page("Webtop").WebButton("LOGIN").Click
+	wait 20
+End If
+If Browser("Browser").Page("CSR Desktop").WebEdit("Email").Exist(3) Then
+	Browser("Browser").Page("CSR Desktop").WebEdit("Email").Set stremailID
+	wait 3
+End If
+wait 2
+If Browser("Browser").Page("CSR Desktop").WebButton("Search").Exist(3) Then
+	Browser("Browser").Page("CSR Desktop").WebButton("Search").Click
+End If
+wait 4
+If Browser("Browser").Page("Agent Authentication Options").Exist(3) Then
+'	Browser("Browser").Page("Agent Authentication Options").WebRadioGroup("agent_selected_val").Select "limited_view"
+'		wait 2
+'	Browser("Browser").Page("Agent Authentication Options").WebButton("Continue").Click
+	wait 3
+	Browser("Browser").Page("Agent Authentication Options").Link("Override").Click
+	
+End If
+wait 7
+
+If Browser("Browser").Page("CSR Desktop").WebButton("Left panel collapse button").Exist(3) Then
+	Browser("Browser").Page("CSR Desktop").WebButton("Left panel collapse button").Click
+	wait 3
+	Browser("Browser").Page("CSR Desktop").WebElement("id_tab_10").Click
+	wait 3
+	
+End If
+wait 5
+If Browser("Browser").Page("CSR Desktop").WebCheckBox("Class Name:=WebCheckBox","index:=2").Exist(5) Then
+		Reporter.ReportEvent micPass,"WebCheckBox","Clicked on WebCheckBox"
+		Browser("Browser").Page("CSR Desktop").WebCheckBox("Class Name:=WebCheckBox","index:=2").Set "ON"
+			wait 4
+		Browser("Browser").Page("CSR Desktop").WebCheckBox("Class Name:=WebCheckBox","index:=2").Set "OFF"
+			wait 4
+	Else
+		Reporter.ReportEvent micFail,"WebCheckBox","Failed to Click on WebCheckBox"
+End If
+wait 3
+If Browser("Browser").Page("CSR Desktop").WebElement("Processed").Exist(3) Then
+	Reporter.ReportEvent micPass,"Order Processed","Processed the order completed"
+Else
+	Reporter.ReportEvent micFail,"Order Processed","Processed the order is failed to complete"
+
+End If
+Browser("Browser").Page("CSR Desktop").Link("text:=Ev").HoverTap
+wait 2
+Browser("Browser").Page("CSR Desktop").Link("name:=Log Off").Click
+'Browser("Browser").Page("CSR Desktop").WebMenu("Evoloadtest012 Log Off").Select "Log Off"
+wait 3
+objShell.SendKeys "{ENTER}"
+wait 4
+objShell.SendKeys "%{F4}"
+
+'Browser("Browser").Close
+
+'Browser("Browser").Page("tef-uat.uk.onpirean.com").
+	
+End Function
+
+Function NavigateToSIMOJourney()
+
+	If Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").Exist(30) Then
+		Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").Link("Shop").HoverTap
+		Reporter.ReportEvent micPass, "Click on Shop link","Clicked on Shop link"
+	Else
+		Reporter.ReportEvent micFail,"Click on Shop link","Clicked on Shop link"
+	End If
+	
+	wait 4
+	If Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").Link("Pay Monthly sims").Exist(5) Then
+		Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").Link("Pay Monthly sims").Click
+	End If
+
+End Function
+
+Function AddToBasketClick()
+
+	Set objShell=CreateObject("WScript.Shell")
+	wait 3
+	For i = 1 To 8 
+	wait 2
+		If Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame_2").WebButton("Add to Basket").Exist(5) Then
+			Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame_2").WebButton("Add to Basket").Click
+			Exit For
+		End If
+	objShell.SendKeys "{PGDN}"
+	Next
+
+End Function
+
+Function SIMOTypeEntry(strSimType)
+
+	Set objShell=CreateObject("WScript.Shell")
+	wait 3
+	For i = 1 To 8
+		If strSimType="eSim" Then
+			
+			'Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("eSIM").Click
+			If Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("eSIM").Exist(3) Then
+			wait 2
+				Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("eSIM").HoverTap
+				wait 2
+				Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("eSIM").Click
+				Exit For
+			End If
+				
+		else 
+			If Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("Plastic SIM").Exist(3) Then
+			wait 2
+				Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("Plastic SIM").HoverTap
+				wait 2
+				Browser("Browser").Page("Page").Frame("ePOSTab&&0Frame").WebElement("Plastic SIM").Click
+				Exit For
+			End If
+		
+		End If	
+	objShell.SendKeys "{PGDN}"		
+	Next
+	
+End Function
+
+Function CancelOrderXstoreValidation()
+		
+If JavaWindow("Oracle Retail Xstore Point").JavaButton("Get Orders").Exist(2) Then
+    JavaWindow("Oracle Retail Xstore Point").JavaButton("Get Orders").Click
+End If
+Wait 2
+'JavaWindow("Oracle Retail Xstore Point").JavaButton("Pending Orders").Click
+If JavaWindow("Oracle Retail Xstore Point").JavaButton("Pending Orders").Exist(2) Then
+    JavaWindow("Oracle Retail Xstore Point").JavaButton("Pending Orders").Click
+End If
+Wait 2
+'JavaWindow("Oracle Retail Xstore Point").JavaList("Pending Orders").Select "#0"
+If JavaWindow("Oracle Retail Xstore Point").JavaButton("Pending Orders").Exist(2) Then
+    JavaWindow("Oracle Retail Xstore Point").JavaButton("Pending Orders").Select "#1"
+End If
+Wait 2
+'JavaWindow("Oracle Retail Xstore Point").JavaButton("Retrieve Order Details").Click
+If JavaWindow("Oracle Retail Xstore Point").JavaButton("Retrieve Order Details").Exist(2) Then
+    JavaWindow("Oracle Retail Xstore Point").JavaButton("Retrieve Order Details").Click
+End If
+
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Total").Click  'Press F7
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaCheckBox("icon-checkbox").Set "ON"
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaCheckBox("icon-checkbox_2").Set "ON"
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm_2").Click
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("OK").Click
+	wait 5
+	CashAmount = JavaWindow("text:=Oracle Retail.*").JavaStaticText("text:=£.*").getRoproperty("text")
+	wait 2
+	JavaWindow("Oracle Retail Xstore Point").JavaEdit("CASH amount").Set "100"
+	wait 2
+	Set myobj = createobject("wscript.shell")
+	myobj.SendKeys "{ENTER}"
+	wait 2
+	
+	If JavaWindow("Oracle Retail Xstore Point").JavaList("Sale Payment Options").Exist(3) Then
+		wait 2
+		JavaWindow("Oracle Retail Xstore Point").JavaList("Sale Payment Options").Select "#4"
+	End If
+	wait 2
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm_2").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Confirm_2").Click
+	End If
+	wait 4
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Back_2").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Back_2").Click
+	End  If
+	wait 2
+	
+	If JavaWindow("Oracle Retail Xstore Point").JavaButton("Cancel").Exist(3) Then
+		JavaWindow("Oracle Retail Xstore Point").JavaButton("Cancel").Click
+	End If
+	
+'JavaWindow("Oracle Retail Xstore Point").JavaButton("Log Off").Click
+If JavaWindow("Oracle Retail Xstore Point").JavaButton("Log Off").Exist(2) Then
+    JavaWindow("Oracle Retail Xstore Point").JavaButton("Log Off").Click
+    Wait 2
+   ' JavaWindow("Oracle Retail Xstore Point").JavaButton("No").Click
+   ' Wait 2
+    'JavaWindow("Oracle Retail Xstore Point").JavaButton("Log Off").Click
+    'Wait 2
+   	If (JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Exist(2)) Then
+		Reporter.ReportEvent micPass, "Transaction abandoned, Xstore Logged off","Test Passed"
+		Else
+		Reporter.ReportEvent micFail, "Transaction not abandoned, Xstore is active","Test Failed"
+		wait 2
+	End if 
+	JavaWindow("Oracle Retail Xstore Point").JavaButton("Yes").Click
+End If
+	
+End Function
+

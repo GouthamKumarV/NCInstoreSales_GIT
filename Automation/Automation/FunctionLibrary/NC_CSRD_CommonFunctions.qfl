@@ -1,0 +1,190 @@
+﻿'###################################################################################################################
+'Function Name: LaunchEvolutionFromXstore
+'Function Description: Evolution to CSRD
+'Designed By Date:Ashwathi Mahendran
+'Designed Date(MM/DD/YY): 05/24/2021
+'Modified By&date: When do some change need to update here
+'###################################################################################################################
+
+Function NC_SearchOrder(stremailID)
+
+If Browser("Browser").Page("Page").WebEdit("searchQuery").Exist(2) Then
+	Browser("Browser").Page("Page").WebEdit("searchQuery").Set stremailID
+End  If
+	Wait 2
+If Browser("Browser").Page("Page").WebElement("SearchButton").Exist(2) Then
+	Browser("Browser").Page("Page").WebElement("SearchButton").Click
+End If
+	Wait 2
+
+If Browser("Browser").Page("Page").Frame("Frame").WebElement("Customer Details").Exist(90) Then
+	Reporter.ReportEvent micPass, "CSRD Application Launched","Step Passed"
+		Else
+	Reporter.ReportEvent micFail, "CSRD Application not launched","Step Failed"
+	End If
+
+End Function
+
+Function EntersecurityAnswer(strSecurityAnswer)
+'******OTAC, PASSPORT Validations******
+If Browser("Browser").Page("Page").Frame("Frame").WebEdit("smsverificationcode").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebEdit("smsverificationcode").Set "999999"
+	End  If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("Frame").WebList("documentProofType").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebList("documentProofType").Select "UK Passport"
+	End  If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("Frame").WebEdit("idReference").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebEdit("idReference").Set "123456789"
+	End  If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("Frame").WebEdit("customerName").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebEdit("customerName").Set "Test"
+	End  If
+	Wait 2
+'****** Security answers to enter*******
+str1 =  Browser("Browser").Page("Page").Frame("Frame").WebElement("securityAnswerChar1Label").getroproperty("innerText")
+str1Value= left(str1,1)
+wait 2
+str2 = Browser("Browser").Page("Page").Frame("Frame").WebElement("securityAnswerChar2Label").getroproperty("innerText")
+str2Value= left(str2,1)
+wait 2
+str3 =  Browser("Browser").Page("Page").Frame("Frame").WebElement("securityAnswerChar3Label").getroproperty("innerText")
+str3Value= left(str3,1)
+Wait 2
+printvalue = strSecurityAnswer
+Wait 2
+lengthprintvalue = len(printvalue)
+'-- Stored Values of security answers--
+firstboxvalue = mid(printvalue,str1Value,1)
+Wait 2
+Secondboxvalue = mid(printvalue,str2Value,1)
+wait 2
+Thirdboxvalue = mid(printvalue,str3Value,1)
+wait 2
+If Browser("Browser").Page("Page").Frame("Frame").WebEdit("securityAnswerValue1").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebEdit("securityAnswerValue1").Set firstboxvalue
+End If
+wait 2
+If Browser("Browser").Page("Page").Frame("Frame").WebEdit("securityAnswerValue2").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebEdit("securityAnswerValue2").Set Secondboxvalue
+End If
+wait 2
+If Browser("Browser").Page("Page").Frame("Frame").WebEdit("securityAnswerValue3").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebEdit("securityAnswerValue3").Set Thirdboxvalue
+End If
+Wait 4
+If Browser("Browser").Page("Page").Frame("Frame").WebButton("Validate").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("Frame").WebButton("Validate").Click
+End If
+Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").Link("Billing Accounts").Exist(60) Then 
+	Reporter.ReportEvent micPass, "DPA Checks sucess","Step Passed"
+		Else
+	Reporter.ReportEvent micFail, "DPA Checks failed","Step Failed"
+	End  If
+End Function
+
+Function AccountPage()
+	
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Left panel collapse button").Exist(30) Then
+	Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Left panel collapse button").Click
+End If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").Link("Orders").Exist(30) Then
+	Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").Link("Orders").Click
+End If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Left panel collapse button").Exist(30) Then
+	Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Left panel collapse button").Click
+End If
+	Wait 2
+'If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").Link("Order #NC_OrderID").Exist(30) Then
+'		Reporter.ReportEvent micPass, "Order details - retrieved","Step Passed"
+'	Else
+'		Reporter.ReportEvent micFail, "Order details - not retrieved","Step Failed"
+'End If
+
+End Function
+
+Function CancelOrder_BeforePayment()
+If Browser("Browser").Page("Page").WebCheckBox("Class Name:=WebCheckBox","index:=2").Exist(5) Then
+		Reporter.ReportEvent micPass,"WebCheckBox","Clicked on WebCheckBox"
+		Browser("Browser").Page("Page").WebCheckBox("Class Name:=WebCheckBox","index:=2").Set "ON"
+			wait 4
+		'Browser("Browser").Page("CSR Desktop").WebCheckBox("Class Name:=WebCheckBox","index:=2").Set "OFF"
+		'wait 4
+	Else
+		Reporter.ReportEvent micFail,"WebCheckBox","Failed to Click on WebCheckBox"
+End If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Cancel Order").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Cancel Order").Click
+End  If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebElement("Cancelmessage").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebElement("Cancelmessage").Click
+End  If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Yes").Exist(10) Then
+	Reporter.ReportEvent micPass, "Order cancelled","Step Passed"
+		Else
+		Reporter.ReportEvent micFail, "Order not Cancelled","Step Failed"
+		Wait 2
+	Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Yes").Click
+	
+Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").Link("text:=Ev").HoverTap
+wait 2
+Browser("Browser").PagePage("Page").Frame("CSRDTab&&0Frame").Link("name:=Log Off").Click
+End  If
+
+End Function
+
+
+Function CancelOrder_AfterPayment()
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebCheckBox("Class Name:=WebCheckBox","index:=2").Exist(5) Then
+		Reporter.ReportEvent micPass,"WebCheckBox","Clicked on WebCheckBox"
+		Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebCheckBox("Class Name:=WebCheckBox","index:=2").Set "ON"
+			wait 4
+		Else
+		Reporter.ReportEvent micFail,"WebCheckBox","Failed to Click on WebCheckBox"
+End If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebElement("Processing").Exist(3) Then
+	Reporter.ReportEvent micPass,"Order Processing","Order cannot be cancelled"
+Else
+	Reporter.ReportEvent micFail,"Order not Processed","Step failed"
+End  If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Cancel Order").Exist(10) Then
+	Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Cancel Order").Click
+End  If
+	Wait 2
+If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebElement("value:=  Close ").Exist(10) Then
+	Reporter.ReportEvent micPass,"Order cannot be Cancelled, message displayed","Test Success"
+		Else
+	Reporter.ReportEvent micFail,"Message not displayed","Step failed"
+		Wait 2
+End  If
+End Function
+
+Function CSRD_Desktop_Upgrade()
+	If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebCheckBox("PhoneNumber_Checkbox").Exist(60) Then
+		Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebCheckBox("PhoneNumber_Checkbox").Set "ON"
+		End  If
+	Wait 2
+	If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Resign ePOS").Exist(60) Then
+		Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Resign ePOS").Click
+		End  If
+	Wait 2
+	If Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Confirm_Warning_Resign").Exist(60) Then
+		Browser("Browser").Page("Page").Frame("CSRDTab&&0Frame").WebButton("Confirm_Warning_Resign").Click
+	End  If
+	Wait 2
+	If Browser("Browser").Page("Page").Frame("Frame").WebElement("Your upgrade options").Exist(60) Then
+		Reporter.ReportEvent micPass,"CSRD navigated to ePOS","Test Success"
+		Else
+		Reporter.ReportEvent micFail,"Failed to launch ePOS","Step failed"
+	End  If
+End Function

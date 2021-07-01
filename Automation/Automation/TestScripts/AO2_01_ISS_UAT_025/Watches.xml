@@ -1,0 +1,4 @@
+﻿<Properties>
+  <WatchEntry0 value="Browser(&quot;Browser&quot;).Page(&quot;CSR Desktop&quot;).WebEdit(&quot;Email&quot;).highlight" />
+  <WatchEntry1 value="stremailID" />
+</Properties>

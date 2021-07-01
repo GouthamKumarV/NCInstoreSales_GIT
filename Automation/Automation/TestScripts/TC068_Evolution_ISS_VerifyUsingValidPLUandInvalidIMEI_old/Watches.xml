@@ -1,0 +1,5 @@
+﻿<Properties>
+  <WatchEntry0 value="strPassword" />
+  <WatchEntry1 value="intPLU" />
+  <WatchEntry2 value="strXstorePassword" />
+</Properties>
